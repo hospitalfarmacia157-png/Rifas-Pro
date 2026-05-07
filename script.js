@@ -1,17 +1,60 @@
 // Inicializar Iconos
 lucide.createIcons();
 
-const STORAGE_KEY = 'rifas_data';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import {
+    getFirestore,
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    addDoc,
+    doc,
+    updateDoc,
+    deleteDoc,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
 const AUTH_KEY = 'admin_logged_in';
 let db = [];
 
-function loadData() {
-    db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-}
+const firebaseConfig = {
+  apiKey: "AIzaSyAoPkJFF18hrd85VgrduPUTVI1xK--hm1E",
+  authDomain: "rifas-pro-800bb.firebaseapp.com",
+  projectId: "rifas-pro-800bb",
+  storageBucket: "rifas-pro-800bb.firebasestorage.app",
+  messagingSenderId: "726708628794",
+  appId: "1:726708628794:web:a53b7469c432f802257403",
+  measurementId: "G-KGR9HSRM9Z"
+};
 
-function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-    updateUI();
+const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
+const participantsRef = collection(firestore, 'participantes');
+
+function loadData() {
+    const q = query(participantsRef, orderBy('nro', 'asc'));
+    onSnapshot(q, snapshot => {
+        db = [];
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            db.push({
+                id: docSnap.id,
+                nombre: data.nombre,
+                dni: data.dni,
+                tel: data.tel,
+                loc: data.loc,
+                nro: data.nro,
+                metodo: data.metodo,
+                medioPago: data.medioPago,
+                cuotas: data.cuotas || 0
+            });
+        });
+        updateUI();
+    }, error => {
+        console.error('Error Firebase:', error);
+        alert('Ocurrió un error cargando los datos desde Firebase.');
+    });
 }
 
 loadData();
@@ -54,8 +97,8 @@ function showPage(id, el) {
 }
 
 // 3. GUARDAR PARTICIPANTE
-function addParticipante() {
-    const nro = document.getElementById('reg-nro').value;
+async function addParticipante() {
+    const nro = String(document.getElementById('reg-nro').value).trim();
     const nombre = document.getElementById('reg-nom').value;
     const apellido = document.getElementById('reg-ape').value;
 
@@ -64,8 +107,8 @@ function addParticipante() {
         return;
     }
 
-    // Validar si el número ya existe
-    if (db.find(x => x.nro === nro)) {
+    // Validar si el número ya existe (comparar como string)
+    if (db.find(x => String(x.nro) === nro)) {
         alert("❌ ERROR: El número " + nro + " ya está reservado por otro participante.");
         return;
     }
@@ -77,7 +120,6 @@ function addParticipante() {
         : 4;
 
     const nuevo = {
-        id: Date.now(), // ID único para no confundir al eliminar
         nombre: `${nombre} ${apellido}`,
         dni: document.getElementById('reg-dni').value || '---',
         tel: document.getElementById('reg-tel').value || '---',
@@ -88,13 +130,20 @@ function addParticipante() {
         cuotas: cuotasIniciales
     };
 
-    db.push(nuevo);
-    saveData();
-    alert("✅ Registro guardado correctamente.");
-    
-    // Limpiar campos
-    document.querySelectorAll('input').forEach(i => i.value = '');
-    showPage('dashboard', document.querySelector('.nav-item'));
+    try {
+        console.log('Guardando participante:', nuevo);
+        await addDoc(participantsRef, nuevo);
+        console.log('Participante guardado exitosamente');
+        alert("✅ Registro guardado correctamente.");
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.getElementById('reg-metodo').value = 'contado';
+        document.getElementById('reg-medio-pago').value = 'Transferencia';
+        document.getElementById('box-cuotas').classList.add('hidden');
+        showPage('dashboard', document.querySelector('.nav-item'));
+    } catch (error) {
+        console.error('Error guardando participante:', error);
+        alert('Error al guardar participante en Firebase: ' + error.message);
+    }
 }
 
 // 4. ACTUALIZAR LISTAS Y ESTADÍSTICAS
@@ -260,31 +309,61 @@ function exportFinalizados() {
 }
 
 // 5. ACCIONES (COBRAR Y ELIMINAR)
-function cobrarCuota(id) {
+async function cobrarCuota(id) {
     const p = db.find(x => x.id === id);
     if (p && p.cuotas < 4) {
-        p.cuotas += 1;
-        saveData();
-        if(p.cuotas === 4) alert("¡Felicidades! " + p.nombre + " ha completado el pago.");
+        try {
+            const docRef = doc(firestore, 'participantes', id);
+            await updateDoc(docRef, { cuotas: p.cuotas + 1 });
+            if (p.cuotas + 1 === 4) {
+                alert("¡Felicidades! " + p.nombre + " ha completado el pago.");
+            }
+        } catch (error) {
+            console.error('Error actualizando cuota:', error);
+            alert('No se pudo actualizar la cuota.');
+        }
     }
 }
 
-function eliminarRegistro(id) {
+async function eliminarRegistro(id) {
     if (confirm("¿Estás seguro de eliminar este participante de forma permanente?")) {
-        db = db.filter(x => x.id !== id);
-        saveData();
+        try {
+            const docRef = doc(firestore, 'participantes', id);
+            await deleteDoc(docRef);
+        } catch (error) {
+            console.error('Error eliminando participante:', error);
+            alert('No se pudo eliminar el participante.');
+        }
     }
 }
 
 // 7. RESTABLECER TODO
-function resetAll() {
+async function resetAll() {
     if (confirm("¿Estás seguro de restablecer todo? Se perderán todos los datos.")) {
-        db = [];
-        localStorage.removeItem('rifas_data');
-        updateUI();
-        alert("✅ Todo ha sido restablecido.");
+        try {
+            const snapshot = await getDocs(participantsRef);
+            const promises = snapshot.docs.map(docSnap => deleteDoc(doc(firestore, 'participantes', docSnap.id)));
+            await Promise.all(promises);
+            alert("✅ Todo ha sido restablecido.");
+        } catch (error) {
+            console.error('Error restableciendo datos:', error);
+            alert('No se pudo restablecer los datos.');
+        }
     }
 }
+
+window.login = login;
+window.logout = logout;
+window.showPage = showPage;
+window.addParticipante = addParticipante;
+window.checkCuotas = checkCuotas;
+window.filterPend = filterPend;
+window.filterFin = filterFin;
+window.filterElim = filterElim;
+window.exportFinalizados = exportFinalizados;
+window.cobrarCuota = cobrarCuota;
+window.eliminarRegistro = eliminarRegistro;
+window.resetAll = resetAll;
 
 // Carga inicial
 checkLogin();
