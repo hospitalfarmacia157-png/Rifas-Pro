@@ -184,7 +184,7 @@ function updatePend(filter = '') {
                         </div>
                         <span style="font-weight:700; color:var(--warning)">PAGADO: ${x.cuotas} de 4 CUOTAS</span>
                     </div>
-                    <button class="btn-main" onclick="cobrarCuota(${x.id})">Abonar Cuota</button>
+                    <button class="btn-main" onclick="cobrarCuota('${x.id}')">Abonar Cuota</button>
                 </div>`;
         });
     }
@@ -247,7 +247,7 @@ function updateElim(filter = '') {
                         <span style="font-weight:bold; color:var(--primary);">#${x.nro}</span> - <span>${x.nombre}</span>
                     </div>
                     <button style="background:#fee2e2; color:#ef4444; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600;" 
-                            onclick="eliminarRegistro(${x.id})">
+                            onclick="eliminarRegistro('${x.id}')">
                         Eliminar 🗑️
                     </button>
                 </div>`;
