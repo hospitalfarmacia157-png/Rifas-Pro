@@ -63,7 +63,8 @@ button {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8,16,48,0.28), rgba(255,255,255,0.12));
+    /* Menor opacidad para dejar ver mejor la imagen de fondo */
+    background: linear-gradient(180deg, rgba(8,16,48,0.06), rgba(255,255,255,0.04));
     pointer-events: none;
 }
 
