@@ -24,6 +24,7 @@
 body {
     background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
     color: var(--text-dark);
+    padding-bottom: 80px;
 }
 
 button,
@@ -562,4 +563,29 @@ h2 {
     h2 {
         font-size: 1.75rem;
     }
+}
+
+/* ============ FOOTER CREADOR ============ */
+.creator-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    color: white;
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 0.9rem;
+    box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.12);
+    z-index: 100;
+}
+
+.creator-footer p {
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.creator-footer strong {
+    font-weight: 700;
+    color: #60a5fa;
 }
