@@ -47,7 +47,8 @@ button {
     inset: 0;
     /* Fondo por defecto, se puede reemplazar con assets/img/login-bg.png */
     background: linear-gradient(135deg, rgba(224,231,255,0.9) 0%, rgba(248,250,252,0.95) 100%);
-    background-image: url("assets/img/login-bg.png");
+    /* ruta corregida: desde este archivo (assets/css/) la imagen está en ../img/ */
+    background-image: url("/assets/img/login-bg.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
