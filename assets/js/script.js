@@ -42,6 +42,14 @@ try {
     alert('Error iniciando Firebase: ' + (error.message || error));
 }
 
+function handleFirebaseError(error) {
+    console.error('Error Firebase:', error);
+    const message = error && error.code === 'permission-denied'
+        ? 'Acceso denegado. Revisa las reglas de Firestore o el estado de tu proyecto Firebase.'
+        : (error.message || 'Ocurrió un error desconocido con Firebase.');
+    alert(message);
+}
+
 function loadData() {
     if (!participantsRef) {
         console.error('Firebase no está inicializado. No se puede cargar la colección.');
@@ -67,8 +75,7 @@ function loadData() {
         });
         updateUI();
     }, error => {
-        console.error('Error Firebase:', error);
-        alert('Ocurrió un error cargando los datos desde Firebase: ' + (error.message || error));
+        handleFirebaseError(error);
     });
 }
 
@@ -162,7 +169,7 @@ async function addParticipante() {
         showPage('dashboard', document.querySelector('.nav-item'));
     } catch (error) {
         console.error('Error guardando participante:', error);
-        alert('Error al guardar participante en Firebase: ' + error.message);
+        handleFirebaseError(error);
     }
 }
 

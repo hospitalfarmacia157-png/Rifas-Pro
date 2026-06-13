@@ -57,7 +57,7 @@ La configuración de Firebase está en `script.js`:
 
 ### Reglas temporales de Firestore
 
-Para pruebas rápidas, puedes usar reglas abiertas y luego aplicar seguridad:
+Si usaste reglas con fecha de expiración, como:
 
 ```js
 service cloud.firestore {
@@ -69,7 +69,21 @@ service cloud.firestore {
 }
 ```
 
-> Recuerda actualizar las reglas a algo más seguro para producción.
+estas reglas ya no funcionan porque la fecha ya pasó. Eso bloquea el acceso desde la app.
+
+Para desarrollo rápido, puedes usar el archivo local `firestore.rules` incluido en este proyecto:
+
+```js
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+> Importante: esta regla es solo para pruebas locales. En producción debes usar reglas con seguridad real.
 
 ## GitHub
 
