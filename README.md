@@ -5,8 +5,8 @@ Proyecto web simple para gestionar participantes y pagos de rifas usando Firebas
 ## Archivos principales
 
 - `index.html` - Estructura de la interfaz.
-- `style.css` - Estilos visuales.
-- `script.js` - Lógica de aplicación y conexión con Firebase.
+- `assets/css/style.css` - Estilos visuales.
+- `assets/js/script.js` - Lógica de aplicación y conexión con Firebase.
 
 ## Características
 
