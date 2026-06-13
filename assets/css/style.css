@@ -24,7 +24,8 @@
 body {
     background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
     color: var(--text-dark);
-    padding-bottom: 80px;
+    padding-top: 72px;
+    padding-bottom: 0;
 }
 
 button,
@@ -45,10 +46,10 @@ button {
 /* ============ LOGIN SCREEN ============ */
 .login-screen {
     position: fixed;
-    top: 0;
+    top: 72px;
     left: 0;
     right: 0;
-    bottom: 80px;
+    bottom: 0;
     /* Fondo por defecto, se puede reemplazar con assets/img/login-bg.png */
     background: linear-gradient(135deg, rgba(224,231,255,0.9) 0%, rgba(248,250,252,0.95) 100%);
     /* ruta corregida: desde este archivo (assets/css/) la imagen está en ../img/ */
@@ -79,6 +80,16 @@ button {
     border-radius: 32px;
     box-shadow: var(--shadow);
     text-align: center;
+    transform: translateY(80px);
+    opacity: 0;
+    animation: enterUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes enterUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .login-logo {
@@ -568,37 +579,36 @@ h2 {
     }
 }
 
-/* ============ FOOTER CREADOR ============ */
-.creator-footer {
+/* ============ CREATOR TOPBAR ============ */
+.creator-topbar {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     right: 0;
     width: 100%;
     background: linear-gradient(135deg, #0f172a 0%, #1a2847 50%, #111d3a 100%);
     color: white;
-    padding: 24px 20px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 0.98rem;
-    box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.3);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.24);
     z-index: 9999;
-    border-top: 3px solid;
-    border-image: linear-gradient(90deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) 1;
+    border-bottom: 2px solid rgba(255,255,255,0.12);
     backdrop-filter: blur(8px);
 }
 
-.creator-footer p {
+.creator-topbar p {
     margin: 0;
     letter-spacing: 0.04em;
     font-weight: 600;
     line-height: 1.6;
 }
 
-.creator-footer strong {
+.creator-topbar strong {
     font-weight: 800;
-    color: #3b82f6;
-    text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    text-shadow: 0 1px 3px rgba(59, 130, 246, 0.18);
 }
