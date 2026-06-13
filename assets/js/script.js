@@ -166,7 +166,8 @@ async function addParticipante() {
         document.getElementById('reg-metodo').value = 'contado';
         document.getElementById('reg-medio-pago').value = 'Transferencia';
         document.getElementById('box-cuotas').classList.add('hidden');
-        showPage('dashboard', document.querySelector('.nav-item'));
+        updateUI();
+        document.getElementById('reg-nom').focus();
     } catch (error) {
         console.error('Error guardando participante:', error);
         handleFirebaseError(error);
