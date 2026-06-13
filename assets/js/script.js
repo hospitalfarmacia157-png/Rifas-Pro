@@ -192,15 +192,24 @@ function updateUI() {
     lucide.createIcons();
 }
 
+function matchesSearch(x, filter) {
+    const term = String(filter).trim().toLowerCase();
+    if (!term) return true;
+    return (
+        x.nro.toString().toLowerCase().includes(term) ||
+        x.nombre.toLowerCase().includes(term) ||
+        String(x.dni || '').toLowerCase().includes(term) ||
+        String(x.tel || '').toLowerCase().includes(term) ||
+        String(x.loc || '').toLowerCase().includes(term)
+    );
+}
+
 function updatePend(filter = '') {
     const pendBox = document.getElementById('list-pendientes');
     pendBox.innerHTML = '';
-    // Mostrar pendientes normalmente (cuotas < 4).
-    // Si hay un filtro activo, incluimos también el registro aunque ya tenga 4 cuotas
-    // para que el usuario pueda verlo hasta que lo elimine manualmente.
-    let pendientes = db.filter(x => x.cuotas < 4 || (filter && x.nro.toString().includes(filter)));
+    let pendientes = db.filter(x => x.cuotas < 4 || (filter && matchesSearch(x, filter)));
     if (filter) {
-        pendientes = pendientes.filter(x => x.nro.toString().includes(filter));
+        pendientes = pendientes.filter(x => matchesSearch(x, filter));
     }
     
     if (pendientes.length === 0) {
@@ -245,7 +254,7 @@ function updateFin(filter = '') {
     finBox.innerHTML = '';
     let finalizados = db.filter(x => x.cuotas === 4);
     if (filter) {
-        finalizados = finalizados.filter(x => x.nro.toString().includes(filter));
+        finalizados = finalizados.filter(x => matchesSearch(x, filter));
     }
     
     if (finalizados.length === 0) {
@@ -272,10 +281,7 @@ function updateElim(filter = '') {
     elimBox.innerHTML = '';
     let registros = db;
     if (filter) {
-        registros = registros.filter(x => 
-            x.nro.toString().includes(filter) || 
-            x.nombre.toLowerCase().includes(filter.toLowerCase())
-        );
+        registros = registros.filter(x => matchesSearch(x, filter));
     }
     
     if (registros.length === 0) {
@@ -313,7 +319,7 @@ function filterElim() {
 }
 
 function exportFinalizados() {
-    const finalizados = db.filter(x => x.cuotas === 4);
+    const finalizados = db.filter(x => x.cuotas === 4).sort((a, b) => Number(a.nro) - Number(b.nro));
     if (finalizados.length === 0) {
         alert('No hay participantes finalizados para exportar.');
         return;
