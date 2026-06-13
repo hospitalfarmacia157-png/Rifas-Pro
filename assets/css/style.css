@@ -78,13 +78,14 @@ button {
 }
 
 .login-logo {
-    width: 72px;
-    height: 72px;
+    width: 100px;
+    max-height: 70px;
     margin: 0 auto 20px;
     display: block;
     border-radius: 22px;
     background: white;
     padding: 10px;
+    object-fit: contain;
     box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
 }
 
