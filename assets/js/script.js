@@ -96,7 +96,7 @@ function checkLogin() {
 
 function login() {
     const pass = document.getElementById('login-pass').value;
-    if (pass === 'admin') {
+    if (pass === 'hospi2026') {
         localStorage.setItem(AUTH_KEY, 'true');
         checkLogin();
     } else {
