@@ -24,8 +24,7 @@
 body {
     background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
     color: var(--text-dark);
-    padding-top: 72px;
-    padding-bottom: 0;
+    padding: 0;
 }
 
 button,
@@ -46,7 +45,7 @@ button {
 /* ============ LOGIN SCREEN ============ */
 .login-screen {
     position: fixed;
-    top: 72px;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -121,10 +120,13 @@ button {
 }
 
 .login-card h2 {
-    font-size: clamp(2rem, 2.5vw, 2.5rem);
+    font-size: clamp(1.5rem, 2.5vw, 2.4rem);
     font-weight: 800;
     line-height: 1.05;
     margin-bottom: 12px;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: keep-all;
 }
 
 .login-desc {
@@ -581,10 +583,7 @@ h2 {
 
 /* ============ CREATOR TOPBAR ============ */
 .creator-topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     width: 100%;
     background: linear-gradient(135deg, #0f172a 0%, #1a2847 50%, #111d3a 100%);
     color: white;
@@ -594,8 +593,7 @@ h2 {
     justify-content: center;
     text-align: center;
     font-size: 0.98rem;
-    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.24);
-    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12);
     border-bottom: 2px solid rgba(255,255,255,0.12);
     backdrop-filter: blur(8px);
 }
