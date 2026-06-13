@@ -181,9 +181,13 @@ function updateUI() {
     document.getElementById('count-pend').innerText = db.filter(x => x.cuotas < 4).length;
     document.getElementById('count-fin').innerText = db.filter(x => x.cuotas === 4).length;
 
-    updatePend();
-    updateFin();
-    updateElim();
+    const pendFilter = document.getElementById('search-pend')?.value || '';
+    const finFilter = document.getElementById('search-fin')?.value || '';
+    const elimFilter = document.getElementById('search-elim')?.value || '';
+
+    updatePend(pendFilter);
+    updateFin(finFilter);
+    updateElim(elimFilter);
 
     lucide.createIcons();
 }
