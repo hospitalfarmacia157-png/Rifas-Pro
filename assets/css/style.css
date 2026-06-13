@@ -182,12 +182,13 @@ button {
 }
 
 .brand-logo {
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
     object-fit: contain;
     background: white;
-    padding: 6px;
+    padding: 4px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
 .brand-caption {
