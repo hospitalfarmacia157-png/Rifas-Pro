@@ -13,15 +13,19 @@
     <!-- PANTALLA DE LOGIN -->
     <div id="login-screen" class="login-screen">
         <div class="login-card">
-            <div class="login-badge">🔐 ACCESO PERSONAL</div>
+            <div class="login-badge">🔐 ACCESO ADMIN</div>
             <h2>Bienvenido a Rifas Pro</h2>
-            <p class="login-desc">Ingresa tu contraseña para administrar los participantes y pagos de las rifas.</p>
+            <p class="login-desc">Inicia sesión con tu cuenta de administrador de Firebase para acceder al panel.</p>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="admin@ejemplo.com">
+            </div>
             <div class="input-group">
                 <label>Contraseña</label>
                 <input type="password" id="login-pass" placeholder="Ingresa tu contraseña" onkeypress="if(event.key==='Enter') login()">
             </div>
             <button class="btn-login" onclick="login()">Iniciar Sesión</button>
-            <p class="login-secure">🔒 Conexión segura</p>
+            <p class="login-secure">🔒 Autenticación segura con Firebase</p>
         </div>
     </div>
 
@@ -190,7 +194,7 @@
 
     <script type="module" src="assets/js/script.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', checkLogin);
+        // El estado de la aplicación se maneja con Firebase Auth.
     </script>
 </body>
 </html>
