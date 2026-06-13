@@ -14,8 +14,8 @@
     <div id="login-screen" class="login-screen">
         <div class="login-card">
             <div class="login-badge">🔐 ACCESO PERSONAL</div>
-            <h2>Ingresar al Sistema</h2>
-            <p class="login-desc">Ingresa tu contraseña para acceder a la gestión de rifas</p>
+            <h2>Bienvenido a Rifas Pro</h2>
+            <p class="login-desc">Ingresa tu contraseña para administrar los participantes y pagos de las rifas.</p>
             <div class="input-group">
                 <label>Contraseña</label>
                 <input type="password" id="login-pass" placeholder="Ingresa tu contraseña" onkeypress="if(event.key==='Enter') login()">
@@ -27,108 +27,165 @@
 
     <!-- APLICACIÓN PRINCIPAL -->
     <div id="app" class="app hidden">
-        <div class="header-container">
-            <div class="header-title">Sistema de Gestión de Rifas</div>
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark">R</div>
+                <div>
+                    <p class="brand-caption">Sistema de Rifas</p>
+                    <h1>Sistema de Gestión de Rifas</h1>
+                </div>
+            </div>
             <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </header>
+
+        <div class="app-shell">
+            <aside class="sidebar">
+                <p class="sidebar-title">Menú</p>
+                <div class="nav-item active" onclick="showPage('dashboard', this)"><i data-lucide="layout-dashboard"></i> Dashboard</div>
+                <div class="nav-item" onclick="showPage('nuevo', this)"><i data-lucide="user-plus"></i> Nuevo Participante</div>
+                <div class="nav-item" onclick="showPage('pendientes', this)"><i data-lucide="clock"></i> Pagos Pendientes</div>
+                <div class="nav-item" onclick="showPage('finalizados', this)"><i data-lucide="check-circle"></i> Pagos Finalizados</div>
+                <div class="nav-item" onclick="showPage('eliminar', this)"><i data-lucide="trash-2"></i> Eliminar Participante</div>
+            </aside>
+
+            <main>
+                <!-- SECCIÓN DASHBOARD -->
+                <section id="dashboard" class="section active">
+                    <div class="section-head">
+                        <div>
+                            <span class="section-label">Bienvenida</span>
+                            <h2>Control total sobre tus rifas</h2>
+                            <p class="desc">Visualiza participantes, pagos y estado de cada rifa en un solo panel configurado para facilitar tu gestión diaria.</p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn-main" onclick="resetAll()">Restablecer todo</button>
+                        </div>
+                    </div>
+
+                    <div class="hero-grid">
+                        <div class="hero-card">
+                            <h3>Administración rápida</h3>
+                            <p>Registra participantes y controla cobros en segundos, sin complicaciones.</p>
+                        </div>
+                        <div class="hero-card">
+                            <h3>Pagos ordenados</h3>
+                            <p>Visualiza las cuotas pendientes y finalizadas con claridad para tomar decisiones rápidas.</p>
+                        </div>
+                        <div class="hero-card">
+                            <h3>Exporta resultados</h3>
+                            <p>Descarga fácilmente los registros finalizados en un archivo Excel listo para compartir.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-stats">
+                        <div class="card-stat">
+                            <div class="stat-icon-box blue"><i data-lucide="users"></i></div>
+                            <p class="stat-label">Total Participantes</p>
+                            <p class="val" id="count-total">0</p>
+                        </div>
+                        <div class="card-stat">
+                            <div class="stat-icon-box orange"><i data-lucide="clock"></i></div>
+                            <p class="stat-label">Pagos Pendientes</p>
+                            <p class="val" id="count-pend">0</p>
+                        </div>
+                        <div class="card-stat">
+                            <div class="stat-icon-box green"><i data-lucide="check-circle"></i></div>
+                            <p class="stat-label">Pagos Finalizados</p>
+                            <p class="val" id="count-fin">0</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN NUEVO PARTICIPANTE -->
+                <section id="nuevo" class="section">
+                    <div class="section-head">
+                        <div>
+                            <span class="section-label">Nuevo registro</span>
+                            <h2>Agregar participante</h2>
+                            <p class="desc">Completa los datos del participante para reservar su número de rifa y registrar el método de pago.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-white form-card">
+                        <div class="form-row">
+                            <div class="input-group"><label>Nombre</label><input type="text" id="reg-nom"></div>
+                            <div class="input-group"><label>Apellido</label><input type="text" id="reg-ape"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group"><label>DNI</label><input type="text" id="reg-dni"></div>
+                            <div class="input-group"><label>Teléfono</label><input type="text" id="reg-tel"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group"><label>Localidad</label><input type="text" id="reg-loc"></div>
+                            <div class="input-group"><label>Número de Rifa</label><input type="number" id="reg-nro"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Tipo de Pago</label>
+                            <select id="reg-metodo" onchange="checkCuotas(this.value)">
+                                <option value="contado">Contado</option>
+                                <option value="cuotas">Cuotas (Máximo 6)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Método de Pago</label>
+                            <select id="reg-medio-pago">
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Planilla">Planilla</option>
+                            </select>
+                        </div>
+                        <div id="box-cuotas" class="hidden">
+                            <label>Cuotas abonadas al iniciar</label>
+                            <select id="reg-cuotas-ini">
+                                <option value="1">1 cuota</option>
+                                <option value="2">2 cuotas</option>
+                            </select>
+                        </div>
+                        <button class="btn-main" onclick="addParticipante()">Guardar Participante</button>
+                    </div>
+                </section>
+
+                <!-- SECCIONES DE LISTADO (SE LLENAN CON JS) -->
+                <section id="pendientes" class="section">
+                    <div class="section-head">
+                        <div>
+                            <span class="section-label">Pendientes</span>
+                            <h2>Pagos por completar</h2>
+                            <p class="desc">Aquí verás los participantes con cuotas pendientes y podrás abonar el siguiente pago.</p>
+                        </div>
+                    </div>
+                    <input type="text" id="search-pend" class="search-input" placeholder="🔍 Buscar por número de rifa..." onkeyup="filterPend()">
+                    <div id="list-pendientes"></div>
+                </section>
+
+                <section id="finalizados" class="section">
+                    <div class="section-head">
+                        <div>
+                            <span class="section-label">Finalizados</span>
+                            <h2>Pagos completados</h2>
+                            <p class="desc">Consulta los participantes que ya terminaron de pagar y exporta los registros cuando lo necesites.</p>
+                        </div>
+                    </div>
+                    <div class="section-toolbar">
+                        <input type="text" id="search-fin" class="search-input" placeholder="🔍 Buscar por número de rifa..." onkeyup="filterFin()">
+                        <button class="btn-main btn-export" onclick="exportFinalizados()">Exportar a Excel</button>
+                    </div>
+                    <div id="list-finalizados"></div>
+                </section>
+
+                <section id="eliminar" class="section">
+                    <div class="section-head">
+                        <div>
+                            <span class="section-label">Eliminar</span>
+                            <h2>Eliminar participante</h2>
+                            <p class="desc">Busca el registro que desees eliminar permanentemente del sistema.</p>
+                        </div>
+                    </div>
+                    <input type="text" id="search-elim" class="search-input" placeholder="🔍 Buscar por número de rifa o nombre..." onkeyup="filterElim()">
+                    <div id="list-eliminar"></div>
+                </section>
+            </main>
         </div>
-
-        <aside>
-            <div class="nav-item active" onclick="showPage('dashboard', this)"><i data-lucide="layout-dashboard"></i> Gestión de Pagos</div>
-            <div class="nav-item" onclick="showPage('nuevo', this)"><i data-lucide="user-plus"></i> Nuevo Participante</div>
-            <div class="nav-item" onclick="showPage('pendientes', this)"><i data-lucide="clock"></i> Pagos Pendientes</div>
-            <div class="nav-item" onclick="showPage('finalizados', this)"><i data-lucide="check-circle"></i> Pagos Finalizados</div>
-            <div class="nav-item" onclick="showPage('eliminar', this)"><i data-lucide="trash-2"></i> Eliminar Participante</div>
-        </aside>
-
-        <main>
-            <!-- SECCIÓN DASHBOARD -->
-            <section id="dashboard" class="section active">
-                <h1>Panel de Control</h1>
-                <p class="desc">Resumen general del estado de las rifas</p>
-                <div class="grid-stats">
-                    <div class="card-stat">
-                        <div class="stat-icon-box blue"><i data-lucide="users"></i></div>
-                        <p class="stat-label">Total Participantes</p>
-                        <p class="val" id="count-total">0</p>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat-icon-box orange"><i data-lucide="clock"></i></div>
-                        <p class="stat-label">Pagos Pendientes</p>
-                        <p class="val" id="count-pend">0</p>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat-icon-box green"><i data-lucide="check-circle"></i></div>
-                        <p class="stat-label">Pagos Finalizados</p>
-                        <p class="val" id="count-fin">0</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECCIÓN NUEVO PARTICIPANTE -->
-            <section id="nuevo" class="section">
-                <h1>Registrar Nuevo Participante</h1>
-                <p class="desc">Ingresa los datos para reservar un número</p>
-                <div class="card-white">
-                    <div class="form-row">
-                        <div class="input-group"><label>Nombre</label><input type="text" id="reg-nom"></div>
-                        <div class="input-group"><label>Apellido</label><input type="text" id="reg-ape"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="input-group"><label>DNI</label><input type="text" id="reg-dni"></div>
-                        <div class="input-group"><label>Teléfono</label><input type="text" id="reg-tel"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="input-group"><label>Localidad</label><input type="text" id="reg-loc"></div>
-                        <div class="input-group"><label>Número de Rifa</label><input type="number" id="reg-nro"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>Tipo de Pago</label>
-                        <select id="reg-metodo" onchange="checkCuotas(this.value)">
-                            <option value="contado">Contado</option>
-                            <option value="cuotas">Cuotas (Máximo 6)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Método de Pago</label>
-                        <select id="reg-medio-pago">
-                            <option value="Transferencia">Transferencia</option>
-                            <option value="Efectivo">Efectivo</option>
-                            <option value="Planilla">Planilla</option>
-                        </select>
-                    </div>
-                    <div id="box-cuotas" class="hidden">
-                        <label>Cuotas abonadas al iniciar</label>
-                        <select id="reg-cuotas-ini">
-                            <option value="1">1 cuota</option>
-                            <option value="2">2 cuotas</option>
-                        </select>
-                    </div>
-                    <button class="btn-main" onclick="addParticipante()">Guardar Participante</button>
-                </div>
-            </section>
-
-            <!-- SECCIONES DE LISTADO (SE LLENAN CON JS) -->
-            <section id="pendientes" class="section">
-                <h1>Pagos Pendientes</h1>
-                <input type="text" id="search-pend" class="search-input" placeholder="🔍 Buscar por número de rifa..." onkeyup="filterPend()">
-                <div id="list-pendientes"></div>
-            </section>
-
-            <section id="finalizados" class="section">
-                <h1>Pagos Finalizados</h1>
-                <div class="section-toolbar">
-                    <input type="text" id="search-fin" class="search-input" placeholder="🔍 Buscar por número de rifa..." onkeyup="filterFin()">
-                    <button class="btn-main btn-export" onclick="exportFinalizados()">Exportar a Excel</button>
-                </div>
-                <div id="list-finalizados"></div>
-            </section>
-
-            <section id="eliminar" class="section">
-                <h1>Eliminar Registro</h1>
-                <input type="text" id="search-elim" class="search-input" placeholder="🔍 Buscar por número de rifa o nombre..." onkeyup="filterElim()">
-                <div id="list-eliminar"></div>
-            </section>
-        </main>
     </div>
 
     <script type="module" src="script.js"></script>
