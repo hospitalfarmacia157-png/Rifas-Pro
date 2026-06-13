@@ -572,23 +572,30 @@ h2 {
     left: 0;
     right: 0;
     width: 100%;
-    background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1a2847 50%, #111d3a 100%);
     color: white;
-    padding: 20px;
+    padding: 24px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    font-size: 0.95rem;
-    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.2);
+    font-size: 0.98rem;
+    box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.3);
     z-index: 1000;
-    border-top: 2px solid rgba(96, 165, 250, 0.3);
+    border-top: 3px solid;
+    border-image: linear-gradient(90deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) 1;
+    backdrop-filter: blur(8px);
 }
 
 .creator-footer p {
     margin: 0;
-    letter-spacing: 0.03em;
-    font-weight: 500;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    line-height: 1.6;
 }
 
 .creator-footer strong {
-    font-weight: 700;
-    color: #60a5fa;
+    font-weight: 800;
+    color: #3b82f6;
+    text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
