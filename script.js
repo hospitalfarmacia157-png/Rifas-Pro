@@ -28,11 +28,26 @@ const firebaseConfig = {
   measurementId: "G-KGR9HSRM9Z"
 };
 
-const app = initializeApp(firebaseConfig);
-const firestore = getFirestore(app);
-const participantsRef = collection(firestore, 'participantes');
+let app;
+let firestore;
+let participantsRef;
+
+try {
+    app = initializeApp(firebaseConfig);
+    firestore = getFirestore(app);
+    participantsRef = collection(firestore, 'participantes');
+    console.log('Firebase inicializado correctamente');
+} catch (error) {
+    console.error('Error inicializando Firebase:', error);
+    alert('Error iniciando Firebase: ' + (error.message || error));
+}
 
 function loadData() {
+    if (!participantsRef) {
+        console.error('Firebase no está inicializado. No se puede cargar la colección.');
+        return;
+    }
+
     const q = query(participantsRef, orderBy('nro', 'asc'));
     onSnapshot(q, snapshot => {
         db = [];
@@ -53,7 +68,7 @@ function loadData() {
         updateUI();
     }, error => {
         console.error('Error Firebase:', error);
-        alert('Ocurrió un error cargando los datos desde Firebase.');
+        alert('Ocurrió un error cargando los datos desde Firebase: ' + (error.message || error));
     });
 }
 
@@ -129,6 +144,11 @@ async function addParticipante() {
         medioPago: medioPago,
         cuotas: cuotasIniciales
     };
+
+    if (!participantsRef) {
+        alert('Firebase no está inicializado. Revisa la configuración y recarga la página.');
+        return;
+    }
 
     try {
         console.log('Guardando participante:', nuevo);
