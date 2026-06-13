@@ -45,7 +45,10 @@ button {
 /* ============ LOGIN SCREEN ============ */
 .login-screen {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 80px;
     /* Fondo por defecto, se puede reemplazar con assets/img/login-bg.png */
     background: linear-gradient(135deg, rgba(224,231,255,0.9) 0%, rgba(248,250,252,0.95) 100%);
     /* ruta corregida: desde este archivo (assets/css/) la imagen está en ../img/ */
