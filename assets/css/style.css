@@ -181,6 +181,15 @@ button {
     font-size: 1.4rem;
 }
 
+.brand-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    object-fit: contain;
+    background: white;
+    padding: 6px;
+}
+
 .brand-caption {
     color: var(--primary);
     font-size: 0.82rem;
