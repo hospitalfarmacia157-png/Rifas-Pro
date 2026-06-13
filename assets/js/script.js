@@ -190,7 +190,10 @@ function updateUI() {
 function updatePend(filter = '') {
     const pendBox = document.getElementById('list-pendientes');
     pendBox.innerHTML = '';
-    let pendientes = db.filter(x => x.cuotas < 4);
+    // Mostrar pendientes normalmente (cuotas < 4).
+    // Si hay un filtro activo, incluimos también el registro aunque ya tenga 4 cuotas
+    // para que el usuario pueda verlo hasta que lo elimine manualmente.
+    let pendientes = db.filter(x => x.cuotas < 4 || (filter && x.nro.toString().includes(filter)));
     if (filter) {
         pendientes = pendientes.filter(x => x.nro.toString().includes(filter));
     }
@@ -200,6 +203,12 @@ function updatePend(filter = '') {
     } else {
         pendientes.forEach(x => {
             const porcentaje = (x.cuotas / 4) * 100;
+            // Color dinámico: amarillo mientras no esté completo, verde si llegó a 4 cuotas.
+            const fillColor = x.cuotas >= 4 ? 'var(--success)' : 'var(--warning)';
+            const actionButton = x.cuotas < 4
+                ? `<button class="btn-main" onclick="cobrarCuota('${x.id}')">Abonar Cuota</button>`
+                : `<button class="btn-main" disabled style="background:#94a3b8; cursor:default">Completado</button>`;
+
             pendBox.innerHTML += `
                 <div class="card-white" style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
                     <div style="flex-grow:1">
@@ -207,11 +216,11 @@ function updatePend(filter = '') {
                         <p style="font-size:0.9rem; color:var(--text-muted)">Nº RIFA: <strong>${x.nro}</strong> | Tel: ${x.tel}</p>
                         <p style="font-size:0.9rem; color:var(--text-muted)">Tipo: ${x.metodo === 'cuotas' ? 'Cuotas' : 'Contado'} | Medio: ${x.medioPago || '---'}</p>
                         <div style="background:#e2e8f0; height:10px; border-radius:10px; margin:12px 0; width:90%; position:relative;">
-                            <div style="background:var(--warning); width:${porcentaje}%; height:100%; border-radius:10px; transition:0.3s;"></div>
+                            <div style="background:${fillColor}; width:${porcentaje}%; height:100%; border-radius:10px; transition:0.3s;"></div>
                         </div>
-                        <span style="font-weight:700; color:var(--warning)">PAGADO: ${x.cuotas} de 4 CUOTAS</span>
+                        <span style="font-weight:700; color:${fillColor}">PAGADO: ${x.cuotas} de 4 CUOTAS</span>
                     </div>
-                    <button class="btn-main" onclick="cobrarCuota('${x.id}')">Abonar Cuota</button>
+                    ${actionButton}
                 </div>`;
         });
     }

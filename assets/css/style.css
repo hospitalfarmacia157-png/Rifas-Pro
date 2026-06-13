@@ -7,6 +7,8 @@
   --text-medium: #475569;
   --text-light: #64748b;
   --primary: #2563eb;
+    --warning: #f59e0b;
+    --success: #16a34a;
   --primary-soft: #e0ebff;
   --border: #e2e8f0;
   --shadow: 0 30px 80px rgba(15, 23, 42, 0.08);
