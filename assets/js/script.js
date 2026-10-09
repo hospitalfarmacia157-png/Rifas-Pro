@@ -73,6 +73,7 @@ function loadData() {
                 cuotas: data.cuotas || 0
             });
         });
+        db.sort(sortByRifa);
         updateUI();
     }, error => {
         handleFirebaseError(error);
@@ -120,7 +121,8 @@ function showPage(id, el) {
 
 // 3. GUARDAR PARTICIPANTE
 async function addParticipante() {
-    const nro = String(document.getElementById('reg-nro').value).trim();
+    const rawNro = String(document.getElementById('reg-nro').value ?? '').trim();
+    const nro = rawNro.replace(/\s+/g, '');
     const nombre = document.getElementById('reg-nom').value;
     const apellido = document.getElementById('reg-ape').value;
 
@@ -129,8 +131,13 @@ async function addParticipante() {
         return;
     }
 
-    // Validar si el número ya existe (comparar como string)
-    if (db.find(x => String(x.nro) === nro)) {
+    if (!/^\d+$/.test(nro)) {
+        alert('El número de rifa solo puede contener números.');
+        return;
+    }
+
+    const normalizedNro = rifaToNumber(nro);
+    if (db.find(x => rifaToNumber(x.nro) === normalizedNro)) {
         alert("❌ ERROR: El número " + nro + " ya está reservado por otro participante.");
         return;
     }
@@ -146,7 +153,7 @@ async function addParticipante() {
         dni: document.getElementById('reg-dni').value || '---',
         tel: document.getElementById('reg-tel').value || '---',
         loc: document.getElementById('reg-loc').value || '---',
-        nro: nro,
+        nro: String(rifaToNumber(nro)),
         metodo: metodo,
         medioPago: medioPago,
         cuotas: cuotasIniciales
@@ -192,6 +199,25 @@ function updateUI() {
     lucide.createIcons();
 }
 
+function rifaToNumber(value) {
+    const raw = String(value ?? '').trim();
+    if (!raw) return 0;
+
+    const digits = raw.replace(/\D/g, '');
+    if (!digits) return 0;
+
+    return Number(digits);
+}
+
+function formatRifaLabel(value) {
+    const numero = rifaToNumber(value);
+    return `N°${numero}`;
+}
+
+function sortByRifa(a, b) {
+    return rifaToNumber(a.nro) - rifaToNumber(b.nro);
+}
+
 function matchesSearch(x, filter) {
     const term = String(filter).trim().toLowerCase();
     if (!term) return true;
@@ -211,6 +237,7 @@ function updatePend(filter = '') {
     if (filter) {
         pendientes = pendientes.filter(x => matchesSearch(x, filter));
     }
+    pendientes = [...pendientes].sort(sortByRifa);
     
     if (pendientes.length === 0) {
         pendBox.innerHTML = '<p style="color:gray; text-align:center;">No hay pagos pendientes.</p>';
@@ -227,7 +254,7 @@ function updatePend(filter = '') {
                 <div class="card-white" style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
                     <div style="flex-grow:1">
                         <h3 style="color:var(--primary); text-transform:uppercase;">${x.nombre}</h3>
-                        <p style="font-size:0.9rem; color:var(--text-muted)">Nº RIFA: <strong>${x.nro}</strong> | Tel: ${x.tel}</p>
+                        <p style="font-size:0.9rem; color:var(--text-muted)">Nº RIFA: <strong>${formatRifaLabel(x.nro)}</strong> | Tel: ${x.tel}</p>
                         <p style="font-size:0.9rem; color:var(--text-muted)">Tipo: ${x.metodo === 'cuotas' ? 'Cuotas' : 'Contado'} | Medio: ${x.medioPago || '---'}</p>
                         <div style="background:#e2e8f0; height:10px; border-radius:10px; margin:12px 0; width:90%; position:relative;">
                             <div style="background:${fillColor}; width:${porcentaje}%; height:100%; border-radius:10px; transition:0.3s;"></div>
@@ -256,6 +283,7 @@ function updateFin(filter = '') {
     if (filter) {
         finalizados = finalizados.filter(x => matchesSearch(x, filter));
     }
+    finalizados = [...finalizados].sort(sortByRifa);
     
     if (finalizados.length === 0) {
         finBox.innerHTML = '<p style="color:gray; text-align:center;">Aún no hay rifas pagadas totalmente.</p>';
@@ -266,7 +294,7 @@ function updateFin(filter = '') {
                     <div style="display:flex; justify-content:space-between; align-items:center; gap: 24px; flex-wrap: wrap;">
                         <div>
                             <strong style="font-size:1.1rem;">${x.nombre}</strong>
-                            <p style="color:var(--text-muted)">Rifa: ${x.nro} | DNI: ${x.dni}</p>
+                            <p style="color:var(--text-muted)">Rifa: ${formatRifaLabel(x.nro)} | DNI: ${x.dni}</p>
                             <p style="color:var(--text-muted)">Tel: ${x.tel} | Tipo: ${x.metodo === 'cuotas' ? 'Cuotas' : 'Contado'} | Medio: ${x.medioPago || '---'}</p>
                         </div>
                         <span style="color:#16a34a; font-weight:700;">✅ PAGADO TOTAL</span>
@@ -283,6 +311,7 @@ function updateElim(filter = '') {
     if (filter) {
         registros = registros.filter(x => matchesSearch(x, filter));
     }
+    registros = [...registros].sort(sortByRifa);
     
     if (registros.length === 0) {
         elimBox.innerHTML = '<p style="color:gray; text-align:center;">No hay registros que coincidan.</p>';
@@ -291,7 +320,7 @@ function updateElim(filter = '') {
             elimBox.innerHTML += `
                 <div style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid var(--border); align-items:center;">
                     <div>
-                        <span style="font-weight:bold; color:var(--primary);">#${x.nro}</span> - <span>${x.nombre}</span>
+                        <span style="font-weight:bold; color:var(--primary);">${formatRifaLabel(x.nro)}</span> - <span>${x.nombre}</span>
                     </div>
                     <button style="background:#fee2e2; color:#ef4444; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600;" 
                             onclick="eliminarRegistro('${x.id}')">
@@ -319,7 +348,7 @@ function filterElim() {
 }
 
 function exportFinalizados() {
-    const finalizados = db.filter(x => x.cuotas === 4).sort((a, b) => Number(a.nro) - Number(b.nro));
+    const finalizados = [...db.filter(x => x.cuotas === 4)].sort(sortByRifa);
     if (finalizados.length === 0) {
         alert('No hay participantes finalizados para exportar.');
         return;
@@ -335,7 +364,7 @@ function exportFinalizados() {
             x.dni,
             x.tel,
             x.loc,
-            x.nro,
+            rifaToNumber(x.nro),
             x.metodo === 'cuotas' ? 'Cuotas' : 'Contado',
             x.medioPago || '',
             x.cuotas,

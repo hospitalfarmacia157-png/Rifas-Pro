@@ -85,10 +85,22 @@ service cloud.firestore {
 
 > Importante: esta regla es solo para pruebas locales. En producción debes usar reglas con seguridad real.
 
-## GitHub
+## GitHub + Firebase
 
 - Branch principal: `main`
 - Branch de desarrollo: `development`
+- El proyecto ya está configurado para desplegar desde GitHub a Firebase Hosting.
+- Se agregaron workflows en `.github/workflows/` para despliegue automático al hacer push a `main` y previews en pull requests.
+
+### Secret necesario en GitHub
+
+En el repositorio de GitHub, agrega este secret:
+
+```bash
+FIREBASE_SERVICE_ACCOUNT_RIFAS_PRO_800BB
+```
+
+Debe contener el JSON del service account de Firebase del proyecto `rifas-pro-800bb`.
 
 ## Notas
 
